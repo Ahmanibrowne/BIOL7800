@@ -1,0 +1,17 @@
+---
+title: "hw_01. Rmd"
+output:
+  html_document: default
+  pdf_document: default
+date: "2023-09-13"
+---
+My is **Ahmani Browne**, I am a first year Phd student in the Morgan Kelly lab.
+If I am not doing science I am either in the Gym or playing basketball
+I am from the caribbean island of `Antigua and Barbuda`
+I grew up play multiple sports such as swimming, sailing, cricket and basketball
+I played basketball for my undergrad at *Mitchell college* where we earned two conference championships. 
+
+
+
+
+
