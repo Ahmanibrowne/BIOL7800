@@ -1,0 +1,41 @@
+---
+title: "hw_2"
+author: "Ahmani Browne"
+date: "2023-09-21"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Here are my fixed code
+
+```{r}
+mtcars[mtcars$cyl < 6,]
+```
+
+```{r}
+mtcars[0:3,]
+```
+
+```{r}
+mtcars[mtcars$cyl == 8,]
+```
+
+```{r}
+mtcars[mtcars$cyl > 4 | 6, ]
+```
+
+2. For this question, the following code is missing 5 values because x is giving a number between 1 to 5 and x is equal to NA which represents all missing values.
+
+
+3. With the code mtcars[1:15] it doesnt define the columns so the data would have a place to go. With mtcars[1:15, ] it gives the colums its names and the data are able to go to the appropriate locations
+
+4.
+The code created two dimensional data of numbers from a vector of data. the code also creates 3 rows and 3 columns.It also uses the is.na() function to check which elements of the data is missing
+
+
+
