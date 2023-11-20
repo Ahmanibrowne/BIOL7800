@@ -1,0 +1,57 @@
+---
+title: "Homework 4"
+author: "Ahmani Browne"
+date: "2023-11-20"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(rvest)
+
+
+```
+
+
+```{r}
+course_web = "https://introdatasci.dlilab.com/schedule_materials/" #read html and store to course_web
+css_selector = "#main > table" #this is the css for the table
+SM_table = course_web %>%
+read_html() %>% #read html and store to course_web
+html_element(css = css_selector) %>% 
+html_table() %>% 
+print()
+```
+```{r}
+day = stringr::str_extract(SM_table$Date,"[0-9]+")
+month = stringr::str_extract(SM_table$Date,"[:alpha:]+") 
+SM_table = mutate(SM_table, Day = day, Month = month) %>%
+print()
+```
+
+
+```{r}
+Monthly_lectures_table = SM_table %>% 
+group_by(Month) %>% 
+summarise(Monthly_lectures = n_distinct(Day)) 
+Monthly_lectures_table = arrange(Monthly_lectures_table, desc(Monthly_lectures)) %>%
+print() #arranges new table in descending order of Monthly_lecturest then prints it
+
+```
+
+```{r}
+topics = str_remove_all(SM_table$Topic, "[:punct:]") %>%
+str_to_lower()
+```
+
+
+```{r}
+words = str_split(topics, " ") %>% #splits list into words
+unlist() %>% # makes it a vector
+table() %>% #convert vector to table
+sort() %>% #sort the table
+print() #print the table
+```
+
+
