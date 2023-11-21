@@ -1,0 +1,80 @@
+---
+title: "homework 5"
+author: "Ahmani Browne"
+date: "2023-11-18"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library (neonDivData)
+```
+
+
+#1  Create a new column named as genus for data_plant from the taxon_name column. The genus name is the first word of the scientific names. For example, if a record has taxon_name of "Bunchosia glandulosa (Cav.) DC.", then the genus is "Bunchosia". You probably want to use regular expression to do so. Take a look at all the names (sort(unique(data_plant$taxon_name))) to look at possible genus names and think about how to specify the regular expression pattern. Randomly select 100 values from the genus column and print it out.
+
+```{r}
+plant_dt = neonDivData::data_plant
+```
+
+
+```{r}
+
+genus = stringr::str_extract(plant_dt$taxon_name, "ˆ\\w+\\b") #extracted genus
+plant_dt = mutate(plant_dt, genus_name = genus)
+print(head(plant_dt))
+```
+
+```{r}
+random_values = sample(plant_dt$genus_name, 100, replace = FALSE, prob = NULL) %>%
+print() #randomly selected values
+```
+#2 Looking at the taxon_name values, it is clear that some scientific names probably are the same species (as different subspecies). For example, we may want to treat “Calamagrostis canadensis (Michx.) P. Beauv.” and “Calamagrostis canadensis (Michx.) P. Beauv. var. langsdorffii (Link) Inman” as the same species. Create a new column taxon_name2 for data_plant based on taxon_name. taxon_name2 should just contain the first two words of taxon_name. For example, “Calamagrostis canadensis (Michx.) P. Beauv.” and “Calamagrostis canadensis (Michx.) P. Beauv. var. langsdorffii (Link) Inman” should both be “Calamagrostis canadensis”. Randomly select 100 values from the taxon_name2 column and print it out.
+
+```{r}
+gen_sp = str_extract(plant_dt$taxon_name, "ˆ\\w+\\s?\\w*\\b")
+
+plant_dt = mutate(plant_dt, taxon_name2 = gen_sp)
+2
+
+head(plant_dt)
+```
+```{r}
+random_taxom_name2 = sample(plant_dt$taxon_name2, 100, replace = FALSE, prob = NULL) %>%
+print()
+```
+
+#3 Calculate the number of species (based on taxon_name2) of each site observed based on different sizes of plot
+
+```{r}
+n_1 = plant_dt %>% #calls plant data
+group_by(siteID) %>% #plant data that's grouped by the column siteID
+summarise(richness_m2_1 = n_distinct(taxon_name2, sample_area_m2==1))
+n_10 = plant_dt %>%
+group_by(siteID) %>%
+summarise(richness_m2_10 = n_distinct(taxon_name2, sample_area_m2 == 10))
+n_100 = plant_dt %>%
+group_by(siteID) %>% 
+summarise(richness_m2_100 = n_distinct(taxon_name2, sample_area_m2 == 100))  
+n_all = left_join(n_1, n_10) %>%
+left_join(n_100)
+head(n_all)
+```
+
+#4 ransform n_all to a long format data frame named as n_all_long with three columns: siteID, spatial_scale, and richness. Hint: tidyr::pivot_longer().
+
+```{r}
+n_all_long = tidyr::pivot_longer(n_all, cols = 2:4, names_to = "Spatial_scale" , values_to = "Species_richness")
+head(n_all_long)
+```
+
+#Use ggplot2 and n_all_long to generate the plot below. Each line links the three values of each site (hint: aes(group = siteID)).
+
+```{r}
+ggplot(n_all_long, aes(Spatial_scale, Species_richness, group = siteID)) +
+geom_point() +
+geom_line() +
+labs(x= "Spatial Scale", y = "Species Richness") %>%
+print()
+```
+
