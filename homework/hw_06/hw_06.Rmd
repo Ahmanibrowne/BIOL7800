@@ -1,0 +1,130 @@
+---
+title: "Homework 6"
+author: "Ahmani Browne"
+date: "2023-11-28"
+output: pdf_document
+---
+
+
+```{r}
+plant_height= c(110.5, 105.4, 118.1, 104.5, 93.6, 84.1, 77.8, 75.6)
+grain_yield= c(5.755, 5.939, 6.010, 6.545, 6.730, 6.750, 6.899, 7.862) 
+```
+
+1
+  a)Give the least squares estimate of (^B_1) of the slope, B_1. Give a brief interpretation of (^B_1). 
+  
+```{r}
+regression = lm(grain_yield ~ plant_height)
+
+print(regression)
+#-0.03717 is the least square estimate of the slope
+```
+  
+  
+  b)Perform a test for H_0: B_1 = 0 vs H_a : B_1 (/=, not equal to 0) using an F test first and then a T test. Your conclusion?
+  
+```{r}
+#f test
+
+sum_regression = summary(regression)
+print(sum_regression$fstatistic)
+```
+  #Answer= f value is 18.46 and p value is 0.005116 hence reject the null
+  
+  
+  
+  c)Construct a 95% confidence interval for the intercept B_0 by hand using the equation from the lecture, compare your results with those from R and briefly interpret the 95% confidence interval. 
+  
+```{r}
+alpha = 0.05 #percentage outside the confidence interval
+n = 7
+t_7 = qt(alpha/2, n-2)
+print(t_7)
+```
+  
+```{r}
+b_0 = coef(regression)
+print(b_0)
+```
+```{r}
+confint(regression)
+```
+  
+  d) Give the fitted regression line (as a equation that looks like (^y) = a +bx) and the raw residuals. 
+  
+  fitted regression line = (^y =  10.13745532 +-0.03717469)
+```{r}
+ fitted_reg_line =  (10.13745532 +-0.03717469)
+print(fitted_reg_line)
+```
+```{r}
+residuals(object = regression) #raw residuals
+```
+  
+  e)Give an estimate (°)2 of the error variance (σ)^2. 
+
+```{r}
+A = anova(regression)
+print(A$`Sum Sq`)
+```
+```{r}
+estimate = (2.4235668/(8-2))
+print(estimate)
+```
+
+  f)Estimate the expected yield of a rice variety u_0 that has height x_0 = 100 and provide a 95% confidence interval. 
+```{r}
+plant_height = 100
+grain_yield = 10.13745532 + (-0.03717469*(plant_height))   
+print(grain_yield) #expected yield of rice variety
+```
+  
+  
+  g) Predict the yield of a new rice variety that has height x_0 = 100 and provide a 95% prediction interval. Compare the results with those from (f), which one is wider? 
+  
+```{r}
+predict(regression, newdata = data.frame(plant_height = 100), interval = "prediction")
+```
+*Answer* my comparision between 1g and 1f is that they are both similar
+
+  h)Compute the coefficient of determination R^2 and briefly interpret what does it mean. 
+  
+```{r}
+print(sum_regression$r.squared)
+```
+  
+2. This problem is designed to demonstrate why residuals are plotted against (^y) (instead of y). Consider the following (artificial) data set that was constructed so that the relationship between y and x is quadratic. It is immediately evident that a linear fit is not appropriate. However, we adopt the point of view that the residual plot will provide diagnostic information on the lack of fit. 
+
+```{r}
+x = data.frame (x = c(1, 2, 3, 4, 5, 6, 7, 8, 9)),
+y = c(-2.08, -0.72, 0.28, 0.92, 1.20, 1.12, 0.68, -0.12, -1.28) #loaded data
+
+```
+
+
+  a)Plot y vs. x.
+  
+```{r}
+plot(x, y)
+```
+  
+  b)Plot the raw residuals vs. y 
+   
+```{r}
+fit_x = lm(y ~ x, data = x)
+plot(residuals(object = fit_x), y) #I tried many different things but i couldnt pin point the error
+```
+   
+  c)Plot the raw residuals vs. x. 
+  
+  d)Plot the raw residuals vs (^y). 
+  
+  e)Compare the plots from (b), (c), and (d). Is there a meaningful difference between (c) and (d)? Explain. Which of the plots (b) or (d) gives a better indication of the lack of fit? Explain.
+  
+  
+  
+
+
+
+
