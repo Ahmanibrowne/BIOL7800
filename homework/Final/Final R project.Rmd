@@ -1,0 +1,99 @@
+---
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+---
+title: Analyzing Hypoxia stress in two populations of Crassostra virginica using Transcriptomics
+author: "Ahmani Browne"
+date: "2023-12-05"
+output: word_document
+
+                            Introduction
+
+Climate change has been one of the biggest influence in dictating biodiversity.Understanding the mechanism by which species are able to adapt environmental challenges will allow us to make accurate predictions generate effectice strategies that would alter the negative effects of climate change on the loss of biodiversity (Durack & Wijffels, 2010; Meire et al., 2013). 
+
+The eastern oyester, Crassostrea virginica, was used in this experiment for its ability to adapt and acclimatize to rapidly changing environments. Physiological studies aid in understanding and predicting when environmental changes will push species past their tolerance limits (Somero, 2012). Preliminary studies discovered differences of Gulf of Mexico, Texas and Louisianna oysters ability to withstand low oxygen concentrations. Comparison between populations from altering conditions that will allow for exploration of physiological and transcriptional differences that may underlie local adaption to environmental stressors. 
+
+Low oxygen concentrations or hypoxia have an impact on organisms from different environments (Harrison et al., 2006). For aquatic organisms, such as oysters, exposure to hypoxia has been examined to affect many conditions from feeding behaviors, metabolism to growth and larval settlement to name a few(Baker & Mann, 1992; Keppel et al., 2016).
+
+Globally, coastal sites have diplaying hypoxic conditions have increased over the pass few deacades with no signs of slowing down in the future  (Vaquer-Sunyer & Duarte, 2008).
+Which encourages the urgency of understanding hypoxia tolerances. 
+                            
+                            Methods
+F1 individuals from two populations of Crassostrea virginica were collected from esturaries located in in Packery Channel, Texas and Calcasieu Lake, Lousianna. These populations were studied in the response of hypoxia stress in 2018. All F1 individuals were were moved to Grand Bay Oyster Park in Alabama for growth prior hypoxia treatments.
+
+At the beginning of the hypoxia trial, which took place at Louisianna State University, individuals from each population were placed into a control or experimental tank. After acclimation, air stones were removed to allow for a natural decline in oxygen for the duration of the trial. Dead oysters were collected after 3 days suggested by prior research when the two populations exhibited hypoxia responses and mortality rate. RNA extraction were taken from gill tissues and digestive glands. 
+
+
+
+                            Data Analysis
+Total RNA was extracted for gill and digestive gland samples then sent to the University of Texas at Austin's Genomics Sequencing and Analysis Facility. Onced Sequenced we recieved the gill matrix data along with phenotypic matrix containing the sample name, population and day, When was then processed in Rstudio to analyze the up regulated and down regulated genes.                             
+```{r}
+# Load in Data.....................................................................
+setwd("C:/Users/Ahmani/OneDrive/Documents/Grad School/Data Science/Hypoxia_Transcrptomics")
+
+exp_matrix = read.table('gill_exp_matrix.txt',header = TRUE, row.names = 1)
+pheno_matrix =  read.table('pheno-matirx-gill.txt', header = TRUE)
+
+Pd = pheno_matrix[pheno_matrix$population=="TX",]
+Pd = Pd[Pd$day==1,]
+Pd$condition = factor((as.vector(Pd$condition)))
+
+Ed = exp_matrix[,pheno_matrix$population=="TX" & pheno_matrix$day==1]
+Ed = round(Ed)  
+
+# DESeq2 Analysis.................................................................. 
+library(DESeq2)
+
+dds <- DESeqDataSetFromMatrix( as.matrix(Ed),Pd, ~ condition)
+de_data   <- DESeq(dds)
+rownames(Pd) <- as.vector(Pd$sample_name)
+
+de_result= data.frame(results(de_data))
+de_result = na.omit(de_result)
+
+de_result_sig = de_result[de_result$padj < 0.05,]  #for p-value 
+de_result_sig = de_result_sig[order(de_result_sig$padj),]
+
+up_reg_genes= de_result_sig[de_result_sig$log2FoldChange> 1,]
+down_reg_genes= de_result_sig[de_result_sig$log2FoldChange < -1,]
+
+setwd("C:/Users/Ahmani/OneDrive/Documents/Grad School/Data Science/Hypoxia_Transcrptomics")
+write.csv(de_result_sig, "C:/Users/Ahmani/OneDrive/Documents/Grad School/Data Science/Hypoxia_Transcrptomics/TX_D1_sig_DEseq.csv")
+write.csv(up_reg_genes, "C:/Users/Ahmani/OneDrive/Documents/Grad School/Data Science/Hypoxia_Transcrptomics/TX_D1_upreg_DESeq.csv")
+write.csv(down_reg_genes, "C:/Users/Ahmani/OneDrive/Documents/Grad School/Data Science/Hypoxia_Transcrptomics/TX_D1_upreg_DESeq.csv")
+#this is the script used to analyze the data across both population on different days
+```
+                            
+                            Results
+Differential expression test were performed between control and hypoxic condistions in the gill and digestive glands using the DEseq2. the genes that showed significant differences between conditions were considered the differentially expressed genes (DEG). It was observed that the DEG elevated as the days went by, with day 2 being the highest in Louisianna and day 3 being the highest in Texas. Table 1 depts the the total, up regulated and down regulated DEGS across 3 days in both populations.
+```{r}
+data <- readClipboard()
+
+data <- read.table(file = 'clipboard', sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+```
+	
+                            Discussion  
+This study aimed to analyze the different hypoxic responses to the eastern oyster in 2 different locations. The eastern oysters are able to withstand a wide range of anthropogenic stress(Quilang et al., 2007). However, preliminary data have highlighted different responses to hypoxic stress at different locations which raised a posibility that certain areas may have adapted tolerancy to hypoxic conditions. To explore this possibility we constructed a garden experement with a hypoxic tolerant Texas population and a hypoxic sensitive Louisiana population through analyzing patterns of differential gene expressions. Overall, these results provides evidence of possible adaption to hypoxia through the diffent gene expressions. In a changing environment where hypoxic conditions are becoming more common especiall in the Gulf of Mexico, organisms such as oysters are contously adapting to these conditions where they are becoming more and more tolerant. 
+                            
+                            References                                                   
+ Baker, S. M., & Mann, R. (1992). Effects of Hypoxia and Anoxia on Larval Settlement, Juvenile Growth, and Juvenile Survival of the Oyster Crassostrea virginica. The Biological Bulletin, 182(2), 265–269. https://doi.org/10.2307/1542120
+                            
+ Durack, P. J., & Wijffels, S. E. (2010). Fifty-Year Trends in Global Ocean Salinities and Their Relationship to Broad-Scale Warming. Journal of Climate, 23(16), 4342–4362. https://doi.org/10.1175/2010JCLI3377.1
+                            
+Harrison, J., Frazier, M. R., Henry, J. R., Kaiser, A., Klok, C. J., & Rascón, B. (2006). Responses of terrestrial insects to hypoxia or hyperoxia. Respiratory Physiology & Neurobiology, 154(1–2), 4–17. https://doi.org/10.1016/j.resp.2006.02.008
+
+Keppel, A. G., Breitburg, D. L., & Burrell, R. B. (2016). Effects of Co-Varying Diel-Cycling Hypoxia and pH on Growth in the Juvenile Eastern Oyster, Crassostrea virginica. PLOS ONE, 11(8), e0161088. https://doi.org/10.1371/journal.pone.0161088
+
+Somero, G. N. (2012). The Physiology of Global Change: Linking Patterns to Mechanisms. Annual Review of Marine Science, 4(1), 39–61. https://doi.org/10.1146/annurev-marine-120710-100935
+
+Vaquer-Sunyer, R., & Duarte, C. M. (2008). Thresholds of hypoxia for marine biodiversity. Proceedings of the National Academy of Sciences, 105(40), 15452–15457. https://doi.org/10.1073/pnas.0803833105
+
+
+                                                        
+                            
+
+                                                        
+
